@@ -1,17 +1,19 @@
-from db.database import metadata
+from db.database import Base
 from sqlalchemy import Column, DateTime, Enum, Integer, String, Table, func
+from sqlalchemy.orm import relationship
+
 import enums
 
-users = Table(
-    "users",
-    metadata,
-    Column("id", Integer, primary_key=True),
-    Column("name", String(200), nullable=False),
-    Column("email", String(200), nullable=False),
-    Column("password", String(255)),
-    Column("last_name", String(200)),
-    Column("location", String(200)),
-    Column("role", Enum(enums.RoleType), nullable=False, server_default=enums.RoleType.user.name),
-    Column("created_at", DateTime, server_default=func.now()),
-    Column("modified_at", DateTime, server_default=func.now()),
-)
+
+class Users(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    name = Column(String(200), nullable=False)
+    email = Column(String(200), nullable=False)
+    password = Column(String(255))
+    last_name = Column(String(200))
+    location = Column(String(200))
+    role = Column(Enum(enums.RoleType), nullable=False, server_default=enums.RoleType.user.name)
+    created_at = Column(DateTime, server_default=func.now())
+    modified_at = Column(DateTime, server_default=func.now())
+    animals = relationship("Animal", back_populates="owner")

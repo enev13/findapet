@@ -14,7 +14,7 @@ class Animal(AnimalBase):
     age: enums.Age
     coat: enums.Coat
     status: enums.Status
-    user: str
+    owner: str
     good_with_children: enums.BoolType
     good_with_dogs: enums.BoolType
     good_with_cats: enums.BoolType
@@ -47,7 +47,7 @@ class Cat(Animal):
                 "age": "Young",
                 "coat": "Short",
                 "status": "Adopted",
-                "organization": "None",
+                "owner": "None",
                 "good_with_children": 1,
                 "good_with_dogs": 0,
                 "good_with_cats": 1,
