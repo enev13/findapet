@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  findapet-backend:
+    build: 
+      dockerfile: Dockerfile
+    container_name: findapet-backend
+    command: >
+      sh -c "cd app &&
+            poetry install &&
+            poetry export -f "requirements.txt" --without-hashes --with-credentials > "requirements.txt"
+            /wait-for-it.sh postgres:5432 -q -t 60 && 
+            poetry run alembic upgrade head &&
+            poetry run uvicorn --host=0.0.0.0 --port=3000 --reload app.main:app"
+
+    working_dir: /usr/src
+    volumes:
+      - ./:/usr/src
+    ports:
+      - "3000:3000"
+    environment:
+      - APP_ENV=dev
+      - DEBUG=True
+    depends_on:
+      - "postgres"
+
+  postgres:
+    container_name: postgres-db
+    restart: on-failure
+    image: postgres
+    logging:
+      driver: none
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: postgrespass
+      POSTGRES_DB: findapet
+    volumes:
+      - ~/postgres/data:/data/db
+    ports:
+      - '5433:5432'
