@@ -1,8 +1,12 @@
 from typing import List, Optional
+from pydantic import BaseModel
 
-from models import enums
+from app.models import enums
 
-from base import AnimalBase
+
+class AnimalBase(BaseModel):
+    name: str
+    description: str
 
 
 class Animal(AnimalBase):
@@ -26,15 +30,8 @@ class Animal(AnimalBase):
     videos: Optional[List[str]]
     tags: Optional[List[str]]
 
-
-class Dog(Animal):
-    color: List[enums.ColorDog]
-
-
-class Cat(Animal):
-    color: List[enums.ColorCat]
-
     class Config:
+        orm_mode = True
         schema_extra = {
             "example": {
                 "name": "Felix",
@@ -66,6 +63,14 @@ class Cat(Animal):
                 "tags": ["Cute", "Playful"],
             }
         }
+
+
+class Dog(Animal):
+    color: List[enums.ColorDog]
+
+
+class Cat(Animal):
+    color: List[enums.ColorCat]
 
 
 class Rabbit(Animal):
