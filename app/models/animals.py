@@ -1,11 +1,10 @@
-from db.database import Base
 from sqlalchemy import Column, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import relationship
+from app.db.database import Base
+from app.models import enums
 
-import enums
 
-
-class Animal(Base):
+class Animal(Base):  # type: ignore
     __tablename__ = "animals"
     id = Column(Integer, primary_key=True)
     name = Column(String(120), nullable=False)
@@ -43,17 +42,17 @@ class Animal(Base):
         nullable=False,
         server_default=enums.BoolType.no.name,
     )
-    location = (Column(String(200), nullable=False),)
-    photos = relationship("Photo", back_populates="animals")
-    videos = relationship("Video", back_populates="animals")
-    tags = relationship("Tag", back_populates="animals")
+    location = Column(String(200), nullable=False)
+    photos = relationship("Photo", back_populates="animal")
+    videos = relationship("Video", back_populates="animal")
+    tags = relationship("Tag", back_populates="animal")
     created_at = Column(DateTime, server_default=func.now())
     modified_at = Column(DateTime, server_default=func.now())
     owner_id = Column(ForeignKey("users.id"), nullable=False)
     owner = relationship("User", back_populates="animals")
 
 
-class Photo(Base):
+class Photo(Base):  # type: ignore
     __tablename__ = "photos"
     id = Column(Integer, primary_key=True)
     photo_address = Column(String(255), nullable=False)
@@ -61,7 +60,7 @@ class Photo(Base):
     animal = relationship("Animal", back_populates="photos")
 
 
-class Video(Base):
+class Video(Base):  # type: ignore
     __tablename__ = "videos"
     id = Column(Integer, primary_key=True)
     video_address = Column(String(255), nullable=False)
@@ -69,7 +68,7 @@ class Video(Base):
     animal = relationship("Animal", back_populates="videos")
 
 
-class Tag(Base):
+class Tag(Base):  # type: ignore
     __tablename__ = "tags"
     id = Column(Integer, primary_key=True)
     tag_name = Column(String(255), nullable=False)

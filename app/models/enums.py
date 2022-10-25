@@ -1,34 +1,33 @@
 from enum import Enum
-from breeds import CatBreed, DogBreed, RabbitBreed
 
 
-class Type(Enum):
+class Type(str, Enum):
     cat = "Cat"
     dot = "Dog"
     rabbit = "Rabbit"
 
 
-class Gender(Enum):
+class Gender(str, Enum):
     male = "Male"
     female = "Female"
     unknown = "Unknown"
 
 
-class Size(Enum):
+class Size(str, Enum):
     small = "Small"
     medium = "Medium"
     large = "Large"
     xlarge = "Xlarge"
 
 
-class Age(Enum):
+class Age(str, Enum):
     baby = "Baby"
     young = "Young"
     adult = "Adult"
     senior = "Senior"
 
 
-class ColorBird(Enum):
+class ColorBird(str, Enum):
     black = "Black"
     blue = "Blue"
     brown = "Brown"
@@ -46,7 +45,7 @@ class ColorBird(Enum):
     yellow = "Yellow"
 
 
-class ColorDog(Enum):
+class ColorDog(str, Enum):
     apricot_beige = "Apricot / Beige"
     bicolor = "Bicolor"
     black = "Black"
@@ -64,7 +63,7 @@ class ColorDog(Enum):
     yellow = "Yellow / Tan / Blond / Fawn"
 
 
-class ColorCat(Enum):
+class ColorCat(str, Enum):
     black = "Black"
     tuxedo = "Black & White / Tuxedo"
     blue_cream = "Blue Cream"
@@ -97,7 +96,7 @@ class ColorCat(Enum):
     white = "White"
 
 
-class ColorRabbit(Enum):
+class ColorRabbit(str, Enum):
     agouti = "Agouti"
     black = "Black"
     blue_gray = "Blue / Gray"
@@ -112,7 +111,7 @@ class ColorRabbit(Enum):
     white = "White"
 
 
-class Coat(Enum):
+class Coat(str, Enum):
     short = "Short"
     medium = "Medium"
     long = "Long"
@@ -121,7 +120,7 @@ class Coat(Enum):
     curly = "Curly"
 
 
-class Status(Enum):
+class Status(str, Enum):
     adoptable = "Adoptable"
     adopted = "Adopted"
 
@@ -131,7 +130,7 @@ class BoolType(Enum):
     yes = 1
 
 
-class RoleType(Enum):
+class RoleType(str, Enum):
     user = "user"
     shelter = "shelter"
     admin = "admin"
