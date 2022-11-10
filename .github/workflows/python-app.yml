@@ -49,7 +49,7 @@ jobs:
     - name: Test with pytest
       run: |
         poetry run pytest
-      env: |
-          DB_USER:postgres
-          DB_PASSWORD:postgrespass
-          DB_HOST:postgres
+      env:
+        DB_USER: postgres
+        DB_PASSWORD: postgrespass
+        DB_HOST: postgres
