@@ -1,12 +1,7 @@
 from typing import List, Optional
-from pydantic import BaseModel
 
 from app.models import enums
-
-
-class AnimalBase(BaseModel):
-    name: str
-    description: str
+from app.schemas.base import AnimalBase
 
 
 class Animal(AnimalBase):

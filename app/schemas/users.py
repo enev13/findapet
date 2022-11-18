@@ -1,19 +1,15 @@
 from typing import List, Optional
 
 from app.models import enums
-from pydantic import BaseModel, EmailStr
-
-
-class UserBase(BaseModel):
-    email: EmailStr
+from app.schemas.base import UserBase
 
 
 class User(UserBase):
     id: int
-    name: str
+    name: Optional[str]
     last_name: Optional[str]
     location: Optional[str]
-    role: enums.RoleType
+    role: Optional[enums.RoleType] = enums.RoleType.user
     animals: Optional[List[int]]
 
     class Config:
@@ -24,7 +20,7 @@ class User(UserBase):
 
 
 class UserInCreate(UserBase):
-    name: str
+    name: Optional[str]
     last_name: Optional[str]
     location: Optional[str]
     password: str
@@ -35,3 +31,6 @@ class UserInCreate(UserBase):
 
 class UserInLogin(UserBase):
     password: str
+
+    class Config:
+        orm_mode = True

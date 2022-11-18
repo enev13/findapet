@@ -1,6 +1,7 @@
 from app import models
 from app import schemas
 from sqlalchemy.orm import Session
+from core.security import get_hashed_password
 
 
 def get_user(db: Session, user_id: int):
@@ -16,7 +17,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user(db: Session, user: schemas.UserInCreate):
-    user.password = user.password + "notreallyhashed"
+    user.password = get_hashed_password(user.password)
     db_user = models.User(**user.dict())
     db.add(db_user)
     db.commit()
