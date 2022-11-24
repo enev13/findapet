@@ -1,3 +1,3 @@
-from models.breeds import *
-from models.animals import *
-from models.users import *
+from app.models.breeds import *
+from app.models.animals import *
+from app.models.users import *
