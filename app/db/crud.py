@@ -1,6 +1,6 @@
-from app import models
-from app import schemas
 from sqlalchemy.orm import Session
+
+from app import models, schemas
 from app.core.security import get_hashed_password
 
 

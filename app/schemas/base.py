@@ -1,7 +1,5 @@
 from pydantic import BaseModel, EmailStr
 
-from app.models import enums
-
 
 class AnimalBase(BaseModel):
     name: str

@@ -3,11 +3,12 @@ from typing import Any, Union
 
 from decouple import config
 from fastapi import HTTPException
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
-from models.enums import RoleType
 from passlib.context import CryptContext
 from starlette.requests import Request
+
+from app.models.enums import RoleType
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
 ALGORITHM = "HS256"
