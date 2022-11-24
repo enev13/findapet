@@ -54,3 +54,4 @@ jobs:
         DB_PASSWORD: postgrespass
         DB_HOST: localhost
         DB_PORT: 5432
+        JWT_SECRET_KEY: 6b34fb7787b1b83d6dd3305f912bda77256b24f3d7172ed3
