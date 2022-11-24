@@ -1,7 +1,7 @@
 from app import models
 from app import schemas
 from sqlalchemy.orm import Session
-from core.security import get_hashed_password
+from app.core.security import get_hashed_password
 
 
 def get_user(db: Session, user_id: int):
