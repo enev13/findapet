@@ -23,8 +23,3 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
-
-
-# @app.post("/users/{user_id}/animals/", response_model=schemas.Animal)
-# def create_animal_for_user(user_id: int, item: schemas.Animal, db: Session = Depends(get_db)):
-#     return crud.create_user_animal(db=db, item=item, user_id=user_id)

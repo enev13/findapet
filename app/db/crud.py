@@ -29,7 +29,11 @@ def get_animals(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Animal).offset(skip).limit(limit).all()
 
 
-def create_user_animal(db: Session, animal: schemas.Animal, user_id: int):
+def get_animal(db: Session, animal_id: int):
+    return db.query(models.Animal).filter(models.Animal.id == animal_id).first()
+
+
+def create_animal(db: Session, animal: schemas.Animal, user_id: int):
     db_animal = models.Animal(**animal.dict(), owner_id=user_id)
     db.add(db_animal)
     db.commit()
