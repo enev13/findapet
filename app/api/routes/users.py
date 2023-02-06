@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/users/", response_model=list[schemas.User])
 def read_users(
-    skip: int = 0, limit: int = 100, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)
+    skip: int = 0, limit: int = 100, db: Session = Depends(get_db)  # , token: str = Depends(oauth2_scheme)
 ):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
