@@ -18,6 +18,15 @@ class User(UserBase):
             "example": {"name": "Felix", "last_name": "Kanitz", "location": "Varna, Bulgaria", "role": "user"}
         }
 
+    def update(self, data_in):
+        if isinstance(data_in, dict):
+            update_data = data_in
+        else:
+            update_data = data_in.dict(exclude_unset=True)
+        for field in self.__fields__:
+            if field in update_data:
+                setattr(self, field, update_data[field])
+
 
 class UserInCreate(UserBase):
     name: Optional[str]
@@ -27,6 +36,13 @@ class UserInCreate(UserBase):
 
     class Config:
         schema_extra = {"example": {"email": "felix@kanitz.com", "password": "koti"}}
+
+
+class UserInUpdate(UserBase):
+    name: Optional[str]
+    last_name: Optional[str]
+    location: Optional[str]
+    password: Optional[str] = None
 
 
 class UserInLogin(UserBase):

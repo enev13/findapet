@@ -16,9 +16,26 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: schemas.UserInCreate):
+def create_user(db: Session, user: schemas.UserInCreate) -> schemas.User:
     user.password = get_hashed_password(user.password)
     db_user = models.User(**user.dict())
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+def update_user(db: Session, user: schemas.UserInUpdate) -> schemas.User:
+    if isinstance(user, dict):
+        update_data = user
+    else:
+        update_data = user.dict(exclude_unset=True)
+    if update_data["password"]:
+        password = get_hashed_password(update_data["password"])
+        del update_data["password"]
+        update_data["password"] = password
+    db_user = models.User(**update_data)
+    print(db_user)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
