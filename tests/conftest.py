@@ -1,4 +1,4 @@
-from typing import Dict, Generator
+from typing import Generator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -15,11 +15,13 @@ from app.main import app
 
 @pytest.fixture(scope="session")
 def db() -> Generator:
+    """Yield a new database session for each test"""
     yield SessionLocal()
 
 
 @pytest.fixture(scope="module")
 def client() -> Generator:
+    """Yield a new test client for each test"""
     with TestClient(app) as c:
         yield c
 

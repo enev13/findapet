@@ -1,23 +1,18 @@
+"""Tests for users API"""
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 from app.db import crud
 
 from app.main import app
 from app.schemas.users import UserInCreate
-from tests.utils.utils import random_email, random_lower_string
+from tests.utils.random import generate_random_user_data
 
 client = TestClient(app)
 
 
-def generate_random_user_data() -> dict:
-    email = random_email()
-    password = random_lower_string()
-    name = random_lower_string()
-    last_name = random_lower_string()
-    return {"email": email, "password": password, "name": name, "last_name": last_name}
-
-
 def test_create_user_new_email(client: TestClient, db: Session) -> None:
+    """Tests if user is created with new email"""
     data = generate_random_user_data()
     rsp = client.post("/register/", json=data)
 
@@ -30,6 +25,7 @@ def test_create_user_new_email(client: TestClient, db: Session) -> None:
 
 
 def test_retrieve_users(client: TestClient, db: Session) -> None:
+    """Tests if users are retrieved"""
     data = generate_random_user_data()
     user_in = UserInCreate(**data)
     crud.create_user(db, user=user_in)
@@ -47,6 +43,7 @@ def test_retrieve_users(client: TestClient, db: Session) -> None:
 
 
 def test_update_user(client: TestClient, db: Session) -> None:
+    """Tests if user is updated"""
     data = generate_random_user_data()
     user_in = UserInCreate(**data)
     user = crud.create_user(db, user=user_in)
@@ -63,3 +60,112 @@ def test_update_user(client: TestClient, db: Session) -> None:
 
     assert user
     assert user.email == updated_user["email"]
+
+
+def test_delete_user(client: TestClient, db: Session) -> None:
+    """Tests if user is deleted"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    user = crud.create_user(db, user=user_in)
+
+    rsp = client.delete(f"/users/{user.id}")
+    assert rsp.status_code == 204
+
+    user = crud.get_user(db, user_id=user.id)
+    assert user is None
+
+
+def test_login_user(client: TestClient, db: Session) -> None:
+    """Tests if user can login with correct credentials"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 200
+    assert "access_token" in rsp.json()
+
+
+def test_login_user_wrong_password(client: TestClient, db: Session) -> None:
+    """Tests if user can login with wrong password"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["password"] = "wrong_password"
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 401
+    assert "detail" in rsp.json()
+
+
+def test_login_user_wrong_email(client: TestClient, db: Session) -> None:
+    """Tests if user can login with wrong email"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["email"] = "wrong_email"
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 401
+    assert "detail" in rsp.json()
+
+
+def test_login_user_wrong_email_password(client: TestClient, db: Session) -> None:
+    """Tests if user can login with wrong email and password"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["email"] = "wrong_email"
+    data["password"] = "wrong_password"
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 401
+    assert "detail" in rsp.json()
+
+
+def test_login_user_no_email(client: TestClient, db: Session) -> None:
+    """Tests if user can login with no email"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["email"] = ""
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 422
+    assert "detail" in rsp.json()
+
+
+def test_login_user_no_password(client: TestClient, db: Session) -> None:
+    """Tests if user can login with no password"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["password"] = ""
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 422
+    assert "detail" in rsp.json()
+
+
+def test_login_user_no_email_password(client: TestClient, db: Session) -> None:
+    """Tests if user can login with no email and password"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    data["email"] = ""
+    data["password"] = ""
+    rsp = client.post("/login/", json=data)
+    assert rsp.status_code == 422
+    assert "detail" in rsp.json()
+
+
+def test_login_user_no_data(client: TestClient, db: Session) -> None:
+    """Tests if user can login with no data"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    crud.create_user(db, user=user_in)
+
+    rsp = client.post("/login/", json={})
+    assert rsp.status_code == 422
+    assert "detail" in rsp.json()
