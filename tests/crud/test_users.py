@@ -95,7 +95,6 @@ def test_authenticate_user(db: Session) -> None:
     user_in = generate_random_user_in()
     email = user_in.email
     password = user_in.password
-    print("user_in.password:", user_in.password)
     user = crud.create_user(db, user=user_in)
     authenticated_user = crud.authenticate_user(db, email=email, password=password)
     assert authenticated_user
