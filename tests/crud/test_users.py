@@ -2,9 +2,8 @@
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from app.core.security import get_hashed_password, verify_password
 
-# from app.core.security import verify_password
+from app.core.security import verify_password
 from app.db import crud
 from app.schemas.users import UserInCreate, UserInUpdate
 from tests.utils.random import generate_random_user_data
@@ -89,3 +88,16 @@ def test_change_password(db: Session) -> None:
     assert user2
     assert user.id == user2.id
     assert verify_password(new_password, user2.password)
+
+
+def test_authenticate_user(db: Session) -> None:
+    """Tests if user is authenticated"""
+    user_in = generate_random_user_in()
+    email = user_in.email
+    password = user_in.password
+    print("user_in.password:", user_in.password)
+    user = crud.create_user(db, user=user_in)
+    authenticated_user = crud.authenticate_user(db, email=email, password=password)
+    assert authenticated_user
+    assert user.email == authenticated_user.email
+    assert jsonable_encoder(user) == jsonable_encoder(authenticated_user)

@@ -27,6 +27,8 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.UserInCreate) -> schemas.User:
     """Create a new user."""
+    if crud.get_user_by_email(db, email=user.email):
+        raise HTTPException(status_code=400, detail="User with this email already registered")
     user.password = get_hashed_password(user.password)
     db_user = models.User(**user.dict())
     db.add(db_user)
@@ -56,12 +58,12 @@ def delete_user(db: Session, user_id: int):
 
 def authenticate_user(db: Session, email: str, password: str) -> schemas.User:
     """Authenticate a user."""
-    user = crud.get_user_by_email(db, email=email)
-    if not user:
-        return False
-    if not verify_password(password, user.password):
-        return False
-    return user
+    db_user = crud.get_user_by_email(db, email=email)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="User not found")
+    if not verify_password(password, db_user.password):
+        raise HTTPException(status_code=400, detail="Incorrect email or password")
+    return db_user
 
 
 def get_current_user(db: Session, token: str = Depends(oauth2_scheme)) -> schemas.User:
