@@ -1,16 +1,21 @@
+"""User schemas"""
+
 from typing import List, Optional
 
 from app.models import enums
+from app.schemas.animals import Animal
 from app.schemas.base import UserBase
 
 
 class User(UserBase):
+    """User schema"""
+
     id: int
     name: Optional[str]
     last_name: Optional[str]
     location: Optional[str]
     role: Optional[enums.RoleType] = enums.RoleType.user
-    animals: Optional[List[int]]
+    animals: Optional[List[Animal]]
 
     class Config:
         orm_mode = True
@@ -29,6 +34,8 @@ class User(UserBase):
 
 
 class UserInCreate(UserBase):
+    """User schema for creation"""
+
     name: Optional[str]
     last_name: Optional[str]
     location: Optional[str]
@@ -39,14 +46,19 @@ class UserInCreate(UserBase):
 
 
 class UserInUpdate(UserBase):
+    """User schema for updating"""
+
+    # id: int
     name: Optional[str]
     last_name: Optional[str]
     location: Optional[str]
     password: Optional[str] = None
 
+    class Config:
+        schema_extra = {"example": {"email": "felix@kanitz.com", "password": "koti"}}
+
 
 class UserInLogin(UserBase):
-    password: str
+    """User schema for login"""
 
-    class Config:
-        orm_mode = True
+    password: str

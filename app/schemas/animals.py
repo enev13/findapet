@@ -1,19 +1,21 @@
+"""Schemas for animals."""
 from typing import List, Optional
 
 from app.models import enums
-from app.schemas.base import AnimalBase
+from app.schemas.base import AnimalBase, Photo, Tag, Video
 
 
 class Animal(AnimalBase):
+    """Animal schema."""
+
     id: int
-    type: enums.Type
+    animal_type: enums.Type
     breed: str
     size: enums.Size
     gender: enums.Gender
     age: enums.Age
     coat: enums.Coat
     status: enums.Status
-    owner: str
     good_with_children: enums.BoolType
     good_with_dogs: enums.BoolType
     good_with_cats: enums.BoolType
@@ -21,17 +23,20 @@ class Animal(AnimalBase):
     declawed: enums.BoolType
     special_needs: enums.BoolType
     location: str
-    photos: Optional[List[str]]
-    videos: Optional[List[str]]
-    tags: Optional[List[str]]
+    # photos: Optional[List[Photo]]
+    # videos: Optional[List[Video]]
+    # tags: Optional[List[Tag]]
+    owner_id: int
+    # owner: str
 
     class Config:
-        orm_mode = True
+        """Pydantic config."""
+
         schema_extra = {
             "example": {
                 "name": "Felix",
                 "description": "A playful kitty with nice character",
-                "type": "Cat",
+                "animal_type": "Cat",
                 "breed": "European",
                 "size": "Small",
                 "color": ["tuxedo"],
@@ -60,17 +65,46 @@ class Animal(AnimalBase):
         }
 
 
+class AnimalInCreateUpdate(AnimalBase):
+    animal_type: enums.Type
+    breed: str
+    size: enums.Size
+    gender: enums.Gender
+    age: enums.Age
+    coat: enums.Coat
+    status: enums.Status
+    good_with_children: enums.BoolType
+    good_with_dogs: enums.BoolType
+    good_with_cats: enums.BoolType
+    house_trained: enums.BoolType
+    declawed: enums.BoolType
+    special_needs: enums.BoolType
+    location: str
+    photos: Optional[List[Photo]] = []
+    videos: Optional[List[Video]] = []
+    tags: Optional[List[Tag]] = []
+    owner_id: Optional[int]
+
+
 class Dog(Animal):
+    """Dog schema."""
+
     color: List[enums.ColorDog]
 
 
 class Cat(Animal):
+    """Cat schema."""
+
     color: List[enums.ColorCat]
 
 
 class Rabbit(Animal):
+    """Rabbit schema."""
+
     color: List[enums.ColorRabbit]
 
 
 class Bird(Animal):
+    """Bird schema."""
+
     color: List[enums.ColorBird]
