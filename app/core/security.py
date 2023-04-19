@@ -1,3 +1,5 @@
+"""Security module"""
+
 from datetime import datetime, timedelta
 from typing import Any, Union
 
@@ -20,6 +22,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> str:
+    """Create a JWT token"""
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
@@ -31,23 +34,34 @@ def create_access_token(subject: Union[str, Any], expires_delta: int = None) -> 
 
 
 def get_hashed_password(password: str) -> str:
+    """Hash a password"""
     return password_context.hash(password)
 
 
 def verify_password(password: str, hashed_pass: str) -> bool:
+    """Verify a password"""
     return password_context.verify(password, hashed_pass)
 
 
 def is_user(request: Request):
+    """Check if the user is a 'user' role"""
     if not request.state.user["role"] == RoleType.user:
         raise HTTPException(403, "Forbidden")
 
 
 def is_shelter(request: Request):
+    """Check if the user is a 'shelter' role"""
     if not request.state.user["role"] == RoleType.shelter:
         raise HTTPException(403, "Forbidden")
 
 
 def is_admin(request: Request):
+    """Check if the user is a 'admin' role"""
     if not request.state.user["role"] == RoleType.admin:
+        raise HTTPException(403, "Forbidden")
+
+
+def is_current_user(request: Request, user_id: int):
+    """Check if the user is the current user"""
+    if not request.state.user["id"] == user_id:
         raise HTTPException(403, "Forbidden")
