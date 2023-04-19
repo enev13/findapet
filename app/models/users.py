@@ -17,4 +17,4 @@ class User(Base):  # type: ignore
     role = Column(Enum(enums.RoleType), nullable=False, server_default=enums.RoleType.user.name)
     created_at = Column(DateTime, server_default=func.now())
     modified_at = Column(DateTime, server_default=func.now())
-    animals = relationship("Animal", back_populates="owner")
+    animals = relationship("Animal", back_populates="owner", cascade="all, delete-orphan")

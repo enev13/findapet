@@ -10,7 +10,7 @@ class Animal(Base):  # type: ignore
     id = Column(Integer, primary_key=True)
     name = Column(String(120), nullable=False)
     description = Column(Text, nullable=False)
-    type = Column(Enum(enums.Type), nullable=False, server_default=enums.Type.cat.name)
+    animal_type = Column(Enum(enums.Type), nullable=False, server_default=enums.Type.cat.name)
     breed = Column(String(120), nullable=False)
     size = Column(Enum(enums.Size), nullable=False, server_default=enums.Size.small.name)
     gender = Column(Enum(enums.Gender), nullable=False, server_default=enums.Gender.male.name)
