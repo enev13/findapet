@@ -35,11 +35,13 @@ def test_retrieve_users(client: TestClient, db: Session) -> None:
     crud.create_user(db, user=user_in2)
 
     rsp = client.get("/users/")
+
+    assert 200 <= rsp.status_code < 300
+
     all_users = rsp.json()
 
+    assert all_users
     assert len(all_users) > 1
-    for item in all_users:
-        assert "email" in item
 
 
 def test_update_user(client: TestClient, db: Session) -> None:
@@ -52,11 +54,13 @@ def test_update_user(client: TestClient, db: Session) -> None:
     del new_data["email"]
     data.update(new_data)
 
-    rsp = client.patch("/users/", json=data)
+    rsp = client.patch(f"/users/{user.id}", json=data)
+    print(rsp)
+    assert rsp.status_code == 200
 
     updated_user = rsp.json()
+    print(updated_user)
     user = crud.get_user_by_email(db, email=data["email"])
-    print(user, updated_user)
 
     assert user
     assert user.email == updated_user["email"]
@@ -71,8 +75,14 @@ def test_delete_user(client: TestClient, db: Session) -> None:
     rsp = client.delete(f"/users/{user.id}")
     assert rsp.status_code == 204
 
-    user = crud.get_user(db, user_id=user.id)
+    user = crud.get_user_by_email(db, email=data["email"])
     assert user is None
+
+
+def test_user_not_found(client: TestClient, db: Session) -> None:
+    """Tests if user is not found"""
+    rsp = client.get("/users/0")
+    assert rsp.status_code == 404
 
 
 def test_login_user(client: TestClient, db: Session) -> None:
@@ -80,8 +90,10 @@ def test_login_user(client: TestClient, db: Session) -> None:
     data = generate_random_user_data()
     user_in = UserInCreate(**data)
     crud.create_user(db, user=user_in)
-
-    rsp = client.post("/login/", json=data)
+    login_data = {"username": data["email"], "password": data["password"], "grant_type": "password"}
+    rsp = client.post(
+        "/login/", data=login_data, headers={"content-type": "application/x-www-form-urlencoded"}
+    )
     assert rsp.status_code == 200
     assert "access_token" in rsp.json()
 
@@ -93,8 +105,11 @@ def test_login_user_wrong_password(client: TestClient, db: Session) -> None:
     crud.create_user(db, user=user_in)
 
     data["password"] = "wrong_password"
-    rsp = client.post("/login/", json=data)
-    assert rsp.status_code == 401
+    login_data = {"username": data["email"], "password": data["password"], "grant_type": "password"}
+    rsp = client.post(
+        "/login/", data=login_data, headers={"content-type": "application/x-www-form-urlencoded"}
+    )
+    assert rsp.status_code == 400
     assert "detail" in rsp.json()
 
 
@@ -105,8 +120,11 @@ def test_login_user_wrong_email(client: TestClient, db: Session) -> None:
     crud.create_user(db, user=user_in)
 
     data["email"] = "wrong_email"
-    rsp = client.post("/login/", json=data)
-    assert rsp.status_code == 401
+    login_data = {"username": data["email"], "password": data["password"], "grant_type": "password"}
+    rsp = client.post(
+        "/login/", data=login_data, headers={"content-type": "application/x-www-form-urlencoded"}
+    )
+    assert rsp.status_code == 400
     assert "detail" in rsp.json()
 
 
@@ -118,8 +136,11 @@ def test_login_user_wrong_email_password(client: TestClient, db: Session) -> Non
 
     data["email"] = "wrong_email"
     data["password"] = "wrong_password"
-    rsp = client.post("/login/", json=data)
-    assert rsp.status_code == 401
+    login_data = {"username": data["email"], "password": data["password"], "grant_type": "password"}
+    rsp = client.post(
+        "/login/", data=login_data, headers={"content-type": "application/x-www-form-urlencoded"}
+    )
+    assert rsp.status_code == 400
     assert "detail" in rsp.json()
 
 

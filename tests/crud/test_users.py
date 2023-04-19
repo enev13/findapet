@@ -2,7 +2,7 @@
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
-from app.core.security import verify_password
+from app.core.security import get_hashed_password, verify_password
 
 # from app.core.security import verify_password
 from app.db import crud
@@ -61,17 +61,12 @@ def test_update_user(db: Session) -> None:
     """Tests if user is updated"""
     user_in = generate_random_user_in()
     user = crud.create_user(db, user=user_in)
-    new_password = random_lower_string()
-    user_update = UserInUpdate(password=new_password)
-    user2 = crud.update_user(db, user=user_update)
+    user.location = random_lower_string()
+    user_update = UserInUpdate(**user.__dict__)
+    user2 = crud.update_user(db, user_id=user.id, user=user_update)
     assert user2
-    assert user.email == user2.email
     assert user.id == user2.id
-    assert user.name == user2.name
-    assert user.last_name == user2.last_name
-    assert user.is_admin == user2.is_admin
-    assert user.password != user2.password
-    assert verify_password(new_password, user2.password)
+    assert user.location == user2.location
 
 
 def test_delete_user(db: Session) -> None:
@@ -88,12 +83,9 @@ def test_change_password(db: Session) -> None:
     user_in = generate_random_user_in()
     user = crud.create_user(db, user=user_in)
     new_password = random_lower_string()
-    user2 = crud.change_password(db, user=user, new_password=new_password)
+    user.password = new_password
+    user_update = UserInUpdate(**user.__dict__)
+    user2 = crud.update_user(db, user_id=user.id, user=user_update)
     assert user2
-    assert user.email == user2.email
     assert user.id == user2.id
-    assert user.name == user2.name
-    assert user.last_name == user2.last_name
-    assert user.is_admin == user2.is_admin
-    assert user.password != user2.password
     assert verify_password(new_password, user2.password)

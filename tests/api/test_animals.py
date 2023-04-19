@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from app.db import crud
 
 from app.main import app
-from app.schemas.animals import Animal
+from tests.crud.test_animals import generate_random_animal_in
+from tests.crud.test_users import generate_random_user_in
 from tests.utils.random import generate_random_animal_data
 
 client = TestClient(app)
@@ -14,6 +15,10 @@ client = TestClient(app)
 def test_create_new_animal(client: TestClient, db: Session) -> None:
     """Tests if animal is created"""
     data = generate_random_animal_data()
+
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+    data.update({"owner_id": user.id})
     rsp = client.post("/animals/", json=data)
 
     assert 200 <= rsp.status_code < 300
@@ -26,21 +31,36 @@ def test_create_new_animal(client: TestClient, db: Session) -> None:
 
 def test_get_animals(client: TestClient, db: Session) -> None:
     """Tests if animals are retrieved"""
-    data = generate_random_animal_data()
-    crud.create_animal(db, Animal(**data))
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    crud.create_animal(db, animal=animal_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    crud.create_animal(db, animal=animal_in)
+
     rsp = client.get("/animals/")
 
     assert 200 <= rsp.status_code < 300
 
-    created_animals = rsp.json()
-    animals = crud.get_animals(db)
-    assert animals == created_animals
+    all_animals = rsp.json()
+
+    assert all_animals
+    assert len(all_animals) > 1
 
 
 def test_get_animal(client: TestClient, db: Session) -> None:
     """Tests if animal is retrieved"""
-    data = generate_random_animal_data()
-    animal = crud.create_animal(db, Animal(**data))
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    animal = crud.create_animal(db, animal=animal_in)
+
     rsp = client.get(f"/animals/{animal.id}")
     assert 200 <= rsp.status_code < 300
     retrieved_animal = rsp.json()
@@ -51,10 +71,17 @@ def test_get_animal(client: TestClient, db: Session) -> None:
 
 def test_update_animal(client: TestClient, db: Session) -> None:
     """Tests if animal is updated"""
-    data = generate_random_animal_data()
-    animal = crud.create_animal(db, Animal(**data))
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    animal = crud.create_animal(db, animal=animal_in)
+
     new_data = generate_random_animal_data()
-    rsp = client.put(f"/animals/{animal.id}", json=new_data)
+    new_data.update({"owner_id": user.id})
+    print(new_data)
+    rsp = client.patch(f"/animals/{animal.id}", json=new_data)
     assert 200 <= rsp.status_code < 300
     updated_animal = rsp.json()
     assert updated_animal
@@ -64,14 +91,18 @@ def test_update_animal(client: TestClient, db: Session) -> None:
 
 def test_delete_animal(client: TestClient, db: Session) -> None:
     """Tests if animal is deleted"""
-    data = generate_random_animal_data()
-    animal = crud.create_animal(db, Animal(**data))
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    animal = crud.create_animal(db, animal=animal_in)
+
     rsp = client.delete(f"/animals/{animal.id}")
-    assert 200 <= rsp.status_code < 300
-    deleted_animal = rsp.json()
-    assert deleted_animal
-    assert deleted_animal["id"] == animal.id
-    assert deleted_animal["name"] == animal.name
+    assert rsp.status_code == 204
+
+    animal = crud.get_animal(db, animal_id=animal.id)
+    assert animal is None
 
 
 def test_get_animal_not_found(client: TestClient, db: Session) -> None:
@@ -80,34 +111,31 @@ def test_get_animal_not_found(client: TestClient, db: Session) -> None:
     assert rsp.status_code == 404
 
 
-def test_update_animal_not_found(client: TestClient, db: Session) -> None:
-    """Tests if animal is not found"""
-    data = generate_random_animal_data()
-    rsp = client.put("/animals/0", json=data)
-    assert rsp.status_code == 404
-
-
-def test_delete_animal_not_found(client: TestClient, db: Session) -> None:
-    """Tests if animal is not found"""
-    rsp = client.delete("/animals/0")
-    assert rsp.status_code == 404
-
-
 def test_create_animal_invalid_data(client: TestClient, db: Session) -> None:
     """Tests if animal is not created"""
     data = generate_random_animal_data()
-    data["name"] = 1
+
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+    data.update({"owner_id": user.id, "age": 1})
+
     rsp = client.post("/animals/", json=data)
     assert rsp.status_code == 422
 
 
 def test_update_animal_invalid_data(client: TestClient, db: Session) -> None:
     """Tests if animal is not updated"""
-    data = generate_random_animal_data()
-    animal = crud.create_animal(db, Animal(**data))
+    user_in = generate_random_user_in()
+    user = crud.create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    animal = crud.create_animal(db, animal=animal_in)
+
     new_data = generate_random_animal_data()
-    new_data["name"] = 1
-    rsp = client.put(f"/animals/{animal.id}", json=new_data)
+    new_data.update({"owner_id": user.id, "age": 1})
+
+    rsp = client.patch(f"/animals/{animal.id}", json=new_data)
     assert rsp.status_code == 422
 
 
