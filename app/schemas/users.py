@@ -23,15 +23,6 @@ class User(UserBase):
             "example": {"name": "Felix", "last_name": "Kanitz", "location": "Varna, Bulgaria", "role": "user"}
         }
 
-    def update(self, data_in):
-        if isinstance(data_in, dict):
-            update_data = data_in
-        else:
-            update_data = data_in.dict(exclude_unset=True)
-        for field in self.__fields__:
-            if field in update_data:
-                setattr(self, field, update_data[field])
-
 
 class UserInCreate(UserBase):
     """User schema for creation"""
