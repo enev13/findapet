@@ -20,3 +20,45 @@ However Find-A-Pet aims not to be a 1:1 clone but a viable full featured open-so
         ├── api              - api tests.
         ├── crud             - database tests.
         └── utils            - test utilities.
+
+# Coverage report
+
+| Name                           | Stmts   | Miss   | Cover   |
+| ------------------------------ | ------- | ------ | ------- |
+| app/\_\_init\_\_.py            | 0       | 0      | 100%    |
+| app/api/\_\_init\_\_.py        | 0       | 0      | 100%    |
+| app/api/routes/\_\_init\_\_.py | 0       | 0      | 100%    |
+| app/api/routes/animals.py      | 29      | 0      | 100%    |
+| app/api/routes/api.py          | 6       | 0      | 100%    |
+| app/api/routes/auth.py         | 20      | 0      | 100%    |
+| app/api/routes/users.py        | 33      | 0      | 100%    |
+| app/core/\_\_init\_\_.py       | 0       | 0      | 100%    |
+| app/core/security.py           | 37      | 9      | 76%     |
+| app/db/\_\_init\_\_.py         | 0       | 0      | 100%    |
+| app/db/crud/\_\_init\_\_.py    | 0       | 0      | 100%    |
+| app/db/crud/animals.py         | 25      | 0      | 100%    |
+| app/db/crud/users.py           | 54      | 13     | 76%     |
+| app/db/database.py             | 21      | 1      | 95%     |
+| app/main.py                    | 10      | 0      | 100%    |
+| app/models/\_\_init\_\_.py     | 3       | 0      | 100%    |
+| app/models/animals.py          | 48      | 0      | 100%    |
+| app/models/breeds.py           | 7       | 0      | 100%    |
+| app/models/enums.py            | 112     | 0      | 100%    |
+| app/models/users.py            | 16      | 0      | 100%    |
+| app/schemas/\_\_init\_\_.py    | 3       | 0      | 100%    |
+| app/schemas/animals.py         | 49      | 0      | 100%    |
+| app/schemas/base.py            | 33      | 0      | 100%    |
+| app/schemas/users.py           | 30      | 0      | 100%    |
+| tests/\_\_init\_\_.py          | 0       | 0      | 100%    |
+| tests/api/\_\_init\_\_.py      | 0       | 0      | 100%    |
+| tests/api/test_animals.py      | 96      | 0      | 100%    |
+| tests/api/test_main.py         | 7       | 0      | 100%    |
+| tests/api/test_users.py        | 156     | 0      | 100%    |
+| tests/conftest.py              | 12      | 0      | 100%    |
+| tests/crud/\_\_init\_\_.py     | 0       | 0      | 100%    |
+| tests/crud/test_animals.py     | 52      | 0      | 100%    |
+| tests/crud/test_users.py       | 85      | 0      | 100%    |
+| tests/utils/\_\_init\_\_.py    | 0       | 0      | 100%    |
+| tests/utils/random.py          | 35      | 0      | 100%    |
+| tests/utils/utils.py           | 6       | 0      | 100%    |
+| **TOTAL**                      | **985** | **23** | **98%** |
