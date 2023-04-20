@@ -40,7 +40,7 @@ def read_user_animals(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/users/{user_id}", response_model=schemas.User)
-def update_user(user_id: int, user: schemas.UserInUpdate, db: Session = Depends(get_db)):
+def patch_user(user_id: int, user: schemas.UserInUpdate, db: Session = Depends(get_db)):
     """Update a user"""
     db_user = get_user(db=db, user_id=user_id)
     if db_user is None:
@@ -49,7 +49,7 @@ def update_user(user_id: int, user: schemas.UserInUpdate, db: Session = Depends(
 
 
 @router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+def remove_user(user_id: int, db: Session = Depends(get_db)):
     """Delete a user"""
     db_user = get_user(db=db, user_id=user_id)
     if db_user is None:
