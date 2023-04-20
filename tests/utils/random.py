@@ -1,4 +1,5 @@
 import random
+
 from tests.utils.utils import random_email, random_lower_string
 
 

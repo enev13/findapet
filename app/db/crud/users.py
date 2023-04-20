@@ -1,13 +1,12 @@
-""" CRUD operations for the database. """
+"""CRUD operations for users."""
 
-from typing import List
 from fastapi import Depends, HTTPException
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 from app import models, schemas
 from app.core.security import ALGORITHM, JWT_SECRET_KEY, get_hashed_password, oauth2_scheme, verify_password
-from app.db import crud
+from app.db.crud import users
 
 
 def get_user(db: Session, user_id: int):
@@ -27,7 +26,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 def create_user(db: Session, user: schemas.UserInCreate) -> schemas.User:
     """Create a new user."""
-    if crud.get_user_by_email(db, email=user.email):
+    if users.get_user_by_email(db, email=user.email):
         raise HTTPException(status_code=400, detail="User with this email already registered")
     user.password = get_hashed_password(user.password)
     db_user = models.User(**user.dict())
@@ -58,7 +57,7 @@ def delete_user(db: Session, user_id: int):
 
 def authenticate_user(db: Session, email: str, password: str) -> schemas.User:
     """Authenticate a user."""
-    db_user = crud.get_user_by_email(db, email=email)
+    db_user = users.get_user_by_email(db, email=email)
     if not db_user:
         raise HTTPException(status_code=400, detail="User not found")
     if not verify_password(password, db_user.password):
@@ -81,48 +80,7 @@ def get_current_user(db: Session, token: str = Depends(oauth2_scheme)) -> schema
         token_data = schemas.UserBase(email=email)
     except JWTError as ex:
         raise credentials_exception from ex
-    user = crud.get_user_by_email(db, email=token_data.email)
+    user = users.get_user_by_email(db, email=token_data.email)
     if user is None:
         raise credentials_exception
     return user
-
-
-def get_animals(db: Session, skip: int = 0, limit: int = 1000) -> List[schemas.Animal]:
-    """Get all animals."""
-    return db.query(models.Animal).offset(skip).limit(limit).all()
-
-
-def get_animals_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[schemas.Animal]:
-    """Get all animals by user."""
-    return db.query(models.Animal).filter(models.Animal.user_id == user_id).offset(skip).limit(limit).all()
-
-
-def get_animal(db: Session, animal_id: int) -> schemas.Animal:
-    """Get an animal by id."""
-    return db.query(models.Animal).filter(models.Animal.id == animal_id).first()
-
-
-def create_animal(db: Session, animal: schemas.AnimalInCreateUpdate) -> schemas.Animal:
-    """Create a new animal."""
-    db_animal = models.Animal(**animal.dict())
-    db.add(db_animal)
-    db.commit()
-    db.refresh(db_animal)
-    return db_animal
-
-
-def update_animal(db: Session, animal: schemas.AnimalInCreateUpdate, animal_id: int) -> schemas.Animal:
-    """Update an animal."""
-    db_animal = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
-    for key, value in animal.dict(exclude_unset=True).items():
-        setattr(db_animal, key, value)
-    db.add(db_animal)
-    db.commit()
-    db.refresh(db_animal)
-    return db_animal
-
-
-def delete_animal(db: Session, animal_id: int):
-    """Delete an animal."""
-    db.query(models.Animal).filter(models.Animal.id == animal_id).delete()
-    db.commit()
