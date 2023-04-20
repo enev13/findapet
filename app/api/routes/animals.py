@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app import schemas
-from app.db.crud.animals import get_animal, get_animals
+from app.db.crud.animals import create_animal, delete_animal, get_animal, get_animals, update_animal
 from app.db.database import get_db
 
 router = APIRouter()
@@ -29,13 +29,13 @@ def read_animal(animal_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/animals/", response_model=schemas.Animal, status_code=status.HTTP_201_CREATED)
-def create_animal(animal: schemas.AnimalInCreateUpdate, db: Session = Depends(get_db)):
+def make_animal(animal: schemas.AnimalInCreateUpdate, db: Session = Depends(get_db)):
     """Create a new animal"""
     return create_animal(db=db, animal=animal)
 
 
 @router.patch("/animals/{animal_id}", response_model=schemas.Animal)
-def update_animal(animal_id: int, animal: schemas.AnimalInCreateUpdate, db: Session = Depends(get_db)):
+def patch_animal(animal_id: int, animal: schemas.AnimalInCreateUpdate, db: Session = Depends(get_db)):
     """Update an animal"""
     db_animal = get_animal(db=db, animal_id=animal_id)
     if db_animal is None:
@@ -44,6 +44,6 @@ def update_animal(animal_id: int, animal: schemas.AnimalInCreateUpdate, db: Sess
 
 
 @router.delete("/animals/{animal_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_animal(animal_id: int, db: Session = Depends(get_db)):
+def remove_animal(animal_id: int, db: Session = Depends(get_db)):
     """Delete an animal"""
     return delete_animal(db=db, animal_id=animal_id)
