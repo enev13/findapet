@@ -5,13 +5,18 @@ However Find-A-Pet aims not to be a 1:1 clone but a viable full featured open-so
 
 # Project Structure
 
-    app
-    ├── api              - web related stuff.
-    │   └── routes       - web routes.
-    ├── core             - application configuration, startup events, logging.
-    ├── db               - db related stuff.
-    │   └── database     - database configurations.
-    ├── models           - sqlalchemy models for this application.
-    ├── schemas          - pydantic schemas for using in web routes.
-    ├── tests            - application tests.
-    └── main.py          - FastAPI application creation and configuration.
+    /
+    ├── app
+    │   ├── api              - web related stuff.
+    │   │   └── routes       - web routes.
+    │   ├── core             - application configuration, startup events, logging.
+    │   ├── db               - database related stuff.
+    │   │   └── database     - database configurations.
+    │   │   └── crud         - database functions.
+    │   ├── models           - sqlalchemy models for this application.
+    │   ├── schemas          - pydantic schemas for using in web routes.
+    │   └── main.py          - FastAPI application creation and configuration.
+    └── tests                - application tests.
+        ├── api              - api tests.
+        ├── crud             - database tests.
+        └── utils            - test utilities.
