@@ -14,7 +14,7 @@ def get_animals(db: Session, skip: int = 0, limit: int = 1000) -> List[schemas.A
 
 def get_animals_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[schemas.Animal]:
     """Get all animals by user."""
-    return db.query(models.Animal).filter(models.Animal.user_id == user_id).offset(skip).limit(limit).all()
+    return db.query(models.Animal).filter(models.Animal.owner_id == user_id).offset(skip).limit(limit).all()
 
 
 def get_animal(db: Session, animal_id: int) -> schemas.Animal:
