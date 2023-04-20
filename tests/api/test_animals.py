@@ -6,9 +6,7 @@ from sqlalchemy.orm import Session
 from app.db.crud.animals import create_animal, get_animal
 from app.db.crud.users import create_user
 from app.main import app
-from tests.crud.test_animals import generate_random_animal_in
-from tests.crud.test_users import generate_random_user_in
-from tests.utils.random import generate_random_animal_data
+from tests.utils.random import generate_random_animal_data, generate_random_animal_in, generate_random_user_in
 
 client = TestClient(app)
 
@@ -16,10 +14,10 @@ client = TestClient(app)
 def test_create_new_animal(client: TestClient, db: Session) -> None:
     """Tests if animal is created"""
     data = generate_random_animal_data()
-
     user_in = generate_random_user_in()
     user = create_user(db, user=user_in)
     data.update({"owner_id": user.id})
+
     rsp = client.post("/animals/", json=data)
 
     assert 200 <= rsp.status_code < 300

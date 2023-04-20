@@ -4,6 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
+from app.db.crud.animals import create_animal, get_animals_by_user
 from app.db.crud.users import (
     authenticate_user,
     create_user,
@@ -13,15 +14,9 @@ from app.db.crud.users import (
     get_users,
     update_user,
 )
-from app.schemas.users import UserInCreate, UserInUpdate
-from tests.utils.random import generate_random_user_data
+from app.schemas.users import UserInUpdate
+from tests.utils.random import generate_random_animal_in, generate_random_user_in
 from tests.utils.utils import random_lower_string
-
-
-def generate_random_user_in() -> UserInCreate:
-    """Generates a random user"""
-    user_in = generate_random_user_data()
-    return UserInCreate(**user_in)
 
 
 def test_create_user(db: Session) -> None:
@@ -108,3 +103,18 @@ def test_authenticate_user(db: Session) -> None:
     assert authenticated_user
     assert user.email == authenticated_user.email
     assert jsonable_encoder(user) == jsonable_encoder(authenticated_user)
+
+
+def test_get_all_animals_for_user(db: Session) -> None:
+    """Tests if user's animals are retrieved"""
+    user_in = generate_random_user_in()
+    user = create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    create_animal(db, animal=animal_in)
+
+    animals = get_animals_by_user(db, user_id=user.id)
+    assert animals
+    for a in animals:
+        assert a.owner_id == user.id

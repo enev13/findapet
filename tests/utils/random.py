@@ -1,16 +1,8 @@
 import random
 
+from app.schemas.animals import Animal, AnimalInCreateUpdate
+from app.schemas.users import UserInCreate
 from tests.utils.utils import random_email, random_lower_string
-
-
-def generate_random_user_data() -> dict:
-    """Generates random user data"""
-    email = random_email()
-    password = random_lower_string()
-    name = random_lower_string()
-    last_name = random_lower_string()
-    locataion = random_lower_string()
-    return {"email": email, "password": password, "name": name, "last_name": last_name, "location": locataion}
 
 
 def generate_random_animal_data() -> dict:
@@ -49,3 +41,25 @@ def generate_random_animal_data() -> dict:
         "special_needs": special_needs,
         "location": location,
     }
+
+
+def generate_random_user_data() -> dict:
+    """Generates random user data"""
+    email = random_email()
+    password = random_lower_string()
+    name = random_lower_string()
+    last_name = random_lower_string()
+    locataion = random_lower_string()
+    return {"email": email, "password": password, "name": name, "last_name": last_name, "location": locataion}
+
+
+def generate_random_animal_in() -> Animal:
+    """Generates random animal data for Animal schema"""
+    animal_in = generate_random_animal_data()
+    return AnimalInCreateUpdate(**animal_in)
+
+
+def generate_random_user_in() -> UserInCreate:
+    """Generates a random user"""
+    user_in = generate_random_user_data()
+    return UserInCreate(**user_in)

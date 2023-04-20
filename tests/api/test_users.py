@@ -2,10 +2,12 @@
 
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from app.db.crud.animals import create_animal
 
 from app.db.crud.users import create_user, get_user_by_email
 from app.main import app
 from app.schemas.users import UserInCreate
+from tests.utils.random import generate_random_animal_in
 from tests.utils.random import generate_random_user_data
 
 client = TestClient(app)
@@ -64,6 +66,25 @@ def test_update_user(client: TestClient, db: Session) -> None:
 
     assert user
     assert user.email == updated_user["email"]
+
+
+def test_retrieve_animals_for_user(client: TestClient, db: Session) -> None:
+    """Tests if animals are retrieved for user"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    user = create_user(db, user=user_in)
+
+    animal_in = generate_random_animal_in()
+    animal_in.owner_id = user.id
+    create_animal(db, animal=animal_in)
+
+    rsp = client.get(f"/users/{user.id}/animals/")
+    assert rsp.status_code == 200
+
+    all_animals = rsp.json()
+
+    assert all_animals
+    assert len(all_animals) > 0
 
 
 def test_delete_user(client: TestClient, db: Session) -> None:

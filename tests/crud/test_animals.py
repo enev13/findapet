@@ -4,15 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db.crud.animals import create_animal, delete_animal, get_animal, get_animals, update_animal
 from app.db.crud.users import create_user
-from app.schemas.animals import Animal, AnimalInCreateUpdate
-from tests.crud.test_users import generate_random_user_in
-from tests.utils.random import generate_random_animal_data
-
-
-def generate_random_animal_in() -> Animal:
-    """Generates random animal data for Animal schema"""
-    animal_in = generate_random_animal_data()
-    return AnimalInCreateUpdate(**animal_in)
+from tests.utils.random import generate_random_animal_in, generate_random_user_in
 
 
 def test_create_animal(db: Session) -> None:
