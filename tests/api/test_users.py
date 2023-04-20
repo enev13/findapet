@@ -26,6 +26,30 @@ def test_create_user_new_email(client: TestClient, db: Session) -> None:
     assert user.email == created_user["email"]
 
 
+def test_create_user_existing_email(client: TestClient, db: Session) -> None:
+    """Tests if user is not created with existing email"""
+    data = generate_random_user_data()
+    create_user(db, user=UserInCreate(**data))
+
+    rsp = client.post("/register/", json=data)
+    assert rsp.status_code == 400
+
+
+def test_retrieve_user(client: TestClient, db: Session) -> None:
+    """Tests if user is retrieved"""
+    data = generate_random_user_data()
+    user_in = UserInCreate(**data)
+    user = create_user(db, user=user_in)
+
+    rsp = client.get(f"/users/{user.id}")
+
+    assert 200 <= rsp.status_code < 300
+
+    retrieved_user = rsp.json()
+    assert retrieved_user
+    assert retrieved_user["email"] == user.email
+
+
 def test_retrieve_users(client: TestClient, db: Session) -> None:
     """Tests if users are retrieved"""
     data = generate_random_user_data()
@@ -68,6 +92,13 @@ def test_update_user(client: TestClient, db: Session) -> None:
     assert user.email == updated_user["email"]
 
 
+def test_update_non_existing_user(client: TestClient, db: Session) -> None:
+    """Tests if user is not updated"""
+    data = generate_random_user_data()
+    rsp = client.patch("/users/0", json=data)
+    assert rsp.status_code == 404
+
+
 def test_retrieve_animals_for_user(client: TestClient, db: Session) -> None:
     """Tests if animals are retrieved for user"""
     data = generate_random_user_data()
@@ -98,6 +129,12 @@ def test_delete_user(client: TestClient, db: Session) -> None:
 
     user = get_user_by_email(db, email=data["email"])
     assert user is None
+
+
+def test_delete_non_existing_user(client: TestClient, db: Session) -> None:
+    """Tests if user is not deleted"""
+    rsp = client.delete("/users/0")
+    assert rsp.status_code == 404
 
 
 def test_user_not_found(client: TestClient, db: Session) -> None:

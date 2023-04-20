@@ -138,6 +138,13 @@ def test_update_animal_invalid_data(client: TestClient, db: Session) -> None:
     assert rsp.status_code == 422
 
 
+def test_update_animal_not_existing(client: TestClient, db: Session) -> None:
+    """Tests if animal is not updated"""
+    new_data = generate_random_animal_data()
+    rsp = client.patch("/animals/0", json=new_data)
+    assert rsp.status_code == 404
+
+
 def test_get_animals_invalid_data(client: TestClient, db: Session) -> None:
     """Tests if animals are not retrieved"""
     rsp = client.get("/animals/?skip=abc&limit=abc")

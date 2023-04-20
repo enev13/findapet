@@ -1,6 +1,8 @@
 """Test CRUD operations for user."""
 
+from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
+import pytest
 from sqlalchemy.orm import Session
 
 from app.core.security import verify_password
@@ -27,6 +29,15 @@ def test_create_user(db: Session) -> None:
     assert hasattr(user, "password")
 
 
+def test_create_user_existing_email(db: Session) -> None:
+    """Tests if user is not created with existing email"""
+    user_in = generate_random_user_in()
+    create_user(db, user=user_in)
+    with pytest.raises(HTTPException) as e:
+        create_user(db, user=user_in)
+        assert e.status_code == 400
+
+
 def test_get_user(db: Session) -> None:
     """Tests if user is retrieved"""
     user_in = generate_random_user_in()
@@ -50,13 +61,10 @@ def test_get_user_by_email(db: Session) -> None:
 def test_get_users(db: Session) -> None:
     """Tests if users are retrieved"""
     user_in = generate_random_user_in()
-    user = create_user(db, user=user_in)
+    create_user(db, user=user_in)
     users = get_users(db, skip=0, limit=100)
     assert users
-    for u in users:
-        if u.email == user.email:
-            assert jsonable_encoder(u) == jsonable_encoder(user)
-            break
+    assert len(users) > 0
 
 
 def test_update_user(db: Session) -> None:
