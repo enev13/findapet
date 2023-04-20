@@ -41,8 +41,7 @@ def update_user(db: Session, user_id: int, user: schemas.UserInUpdate) -> schema
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if user.password:
         user.password = get_hashed_password(user.password)
-    for key, value in user.dict(exclude_unset=True).items():
-        setattr(db_user, key, value)
+    db_user.update(user.dict(exclude_unset=True))
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

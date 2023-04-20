@@ -8,15 +8,23 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 class Base(DeclarativeBase):
-    pass
+    """Base model"""
+
+    def update(self, data_in):
+        if isinstance(data_in, dict):
+            update_data = data_in
+        else:
+            update_data = data_in.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(self, key, value)
 
 
 def get_db():
     db = SessionLocal()
     try:
         yield db
-    except:
+    except Exception as e:
         db.rollback()
-        raise
+        raise e
     finally:
         db.close()

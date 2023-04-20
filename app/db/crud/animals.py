@@ -34,8 +34,7 @@ def create_animal(db: Session, animal: schemas.AnimalInCreateUpdate) -> schemas.
 def update_animal(db: Session, animal: schemas.AnimalInCreateUpdate, animal_id: int) -> schemas.Animal:
     """Update an animal."""
     db_animal = db.query(models.Animal).filter(models.Animal.id == animal_id).first()
-    for key, value in animal.dict(exclude_unset=True).items():
-        setattr(db_animal, key, value)
+    db_animal.update(animal.dict(exclude_unset=True))
     db.add(db_animal)
     db.commit()
     db.refresh(db_animal)
