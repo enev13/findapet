@@ -42,7 +42,7 @@ docker-compose up
 ```
 ##### 3. Browse the API in your web browser
 ```
-http://127.0.0.1:3000/docs
+http://localhost:3000/docs
 ```
 
 ## Coverage report
