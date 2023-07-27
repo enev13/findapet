@@ -1,9 +1,10 @@
 # Find-A-Pet REST API
 
-Find-A-Pet is a pet adoption REST API based on FastAPI and inspired by [Petfinder API](https://www.petfinder.com/developers).
+Find-A-Pet is an experimental REST API for pet adoption based on FastAPI and inspired by [Petfinder API](https://www.petfinder.com/developers).
 However Find-A-Pet aims not to be a 1:1 clone but a viable full featured open-source alternative to Petfinder.
+This project was created for educational purposes and is nowhere near production-ready state.
 
-# Project Structure
+## Project Structure
 
     /
     ├── app
@@ -21,7 +22,30 @@ However Find-A-Pet aims not to be a 1:1 clone but a viable full featured open-so
         ├── crud             - database tests.
         └── utils            - test utilities.
 
-# Coverage report
+## Technologies Used
+- **Python**
+- **FastAPI**
+- **PostgreSQL**
+- **Poetry**
+
+## Quick Start
+
+##### 1. Checkout the project from github
+
+```
+git checkout https://github.com/enev13/composearch.git
+```
+
+##### 2. Run the following command to build and start the containers
+```
+docker-compose up
+```
+##### 3. Browse the API in your web browser
+```
+http://127.0.0.1:3000/docs
+```
+
+## Coverage report
 
 | Name                           | Stmts   | Miss   | Cover   |
 | ------------------------------ | ------- | ------ | ------- |
@@ -62,3 +86,9 @@ However Find-A-Pet aims not to be a 1:1 clone but a viable full featured open-so
 | tests/utils/random.py          | 35      | 0      | 100%    |
 | tests/utils/utils.py           | 6       | 0      | 100%    |
 | **TOTAL**                      | **985** | **23** | **98%** |
+
+## To Do
+- Add model and schema for Adoptions
+- Implement the adoption workflow
+- Add authorization dependency for each endpoint, based on user privileges
+- Functionality for saving a pet to "Favourites"
